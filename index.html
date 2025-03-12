@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+	<title>Voz - Comandos MX-ONE</title>
+	<link
+		href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,800italic,400,300,600,700,800'
+		rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+	<header>
+		<nav class="navbar navbar-light bg-light">
+			<a class="navbar-brand" href="#">Voz - Comandos MX-ONE</a>
+		</nav>
+	</header>
+	<div class="container mt-4">
+		<form>
+			<div class="form-row">
+				<div class="form-group col-sm">
+					<label for="cboTipoAccion">Comando para ...</label>
+					<select id="cboTipoAccion" class="form-control">
+						<option>Extensión</option>
+						<option>Micollab</option>
+						<option>Desvío</option>
+						<option>Grupo de captura</option>
+						<option>Grupo de salto</option>
+						<option>Llamada en espera</option>
+					</select>
+				</div>
+				<div class="form-group col-sm">
+					<label for="cboAccion">Acción</label>
+					<select id="cboAccion" class="form-control">
+					</select>
+				</div>
+			</div>
+
+			<hr class="my-3">
+
+			<div class="form-row">
+				<div class="form-group col-sm">
+					<label for="inputState">Extensión</label>
+					<input type="text" class="form-control" id="inputExtension">
+				</div>
+				<div class="form-group col-sm">
+					<label for="inputNombre">Nombre</label>
+					<input type="text" class="form-control" id="inputNombre">
+				</div>
+				<div class="form-group col-sm">
+					<label for="inputLim">LIM</label>
+					<select id="inputLim" class="form-control">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-sm">
+					<label for="inputCategoria">Categoría</label>
+					<select id="inputCategoria" class="form-control" value="">
+						<option value="0">0 - Interna</option>
+						<option value="20">20 - Provincial</option>
+						<option value="24">24 - Provincial + Móviles</option>
+						<option value="26">26 - Provincial + Móviles + Desv. Externo</option>
+						<option value="30">30 - Nacional</option>
+						<option value="34">34 - Nacional + Móviles</option>
+						<option value="36">36 - Nacional + Móviles + Desv. Externo</option>
+						<option value="40">40 - Internacional</option>
+						<option value="44">44 - Internacional + Móviles</option>
+						<option value="46">46 - Internacional + Móviles + Desv. Externo</option>
+						<option value="50">50 - Regional</option>
+						<option value="54">54 - Regional + Móviles</option>
+						<option value="56">56 - Regional + Móviles + Desv. Externo</option>
+					</select>
+				</div>
+				<div class="form-group col-sm">
+					<label for="inputGrupoCaptura">Número grupo de captura</label>
+					<input type="text" class="form-control" id="inputGrupoCaptura">
+				</div>
+				<div class="form-group col-sm">
+					<label for="inputGrupoSalto">Número grupo de salto</label>
+					<input type="text" class="form-control" id="inputGrupoSalto">
+				</div>
+			</div>
+		</form>
+		<hr class="mt-3">
+		<table class="table table-bordered table-striped mt-4">
+			<thead>
+				<tr>
+					<th scope="col" class="col-2 text-center">¿Ejecutar en MDSH?</th>
+					<th scope="col" class="text-center align-middle">Código</th>
+					<th scope="col" class="col-1 text-center"></th>
+				</tr>
+			</thead>
+			<tbody id="resultado">
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>
+<script type="text/javascript">
+
+	const tipoAccion = document.getElementById('cboTipoAccion');
+	const accion = document.getElementById('cboAccion');
+	const resultado = document.getElementById('resultado');
+	document.getElementById('inputCategoria').value = "";
+	document.getElementById('inputLim').value = "";
+	const opcionesTipoAccion = {
+		'Extensión': ['Alta (manual)', 'Alta (script)', 'Baja', 'Cambio de nombre', 'Cambio de categoría', 'Desregistrar terminal', 'Ver estado', 'Ver num de extensiones en cada LIM', 'Ruta carpeta de informe'],
+		'Micollab' : ['Alta (manual)', 'Alta (script)', 'Comprobar candado'],
+		'Desvío': ['Ver (call list)', 'Eliminar (call list)', 'Ver (diversion)', 'Eliminar (diversion)'],
+		'Grupo de captura': ['Crear grupo', 'Ver grupos', 'Añadir miembro', 'Eliminar miembro'],
+		'Grupo de salto': ['Crear grupo', 'Eliminar grupo', 'Ver grupos', 'Añadir miembro', 'Eliminar miembro'],
+		'Llamada en espera': ['Activar', 'Desactivar']
+	};
+	
+	tipoAccion.value = "";
+
+	tipoAccion.addEventListener('change', () => {
+		const seleccion = tipoAccion.value;
+		const opciones = opcionesTipoAccion[seleccion];
+
+		accion.innerHTML = '';
+		opciones.forEach(opcion => {
+			const option = document.createElement('option');
+			option.value = opcion;
+			option.textContent = opcion;
+			accion.appendChild(option);
+		});
+
+		accion.value = '';
+		resultado.innerHTML = '';
+		document.getElementById('inputExtension').classList.remove("is-invalid");
+		document.getElementById('inputNombre').classList.remove("is-invalid");
+
+	});
+
+	accion.addEventListener('change', () => { actualizarTabla(this.value);});
+	inputNombre.addEventListener('input', () => { if (accion.value != "") actualizarTabla(accion.value);});
+	inputExtension.addEventListener('input', () => { if (accion.value != "") actualizarTabla(accion.value);});
+	inputLim.addEventListener('change', () => { if (accion.value != "") actualizarTabla(accion.value);});
+	inputCategoria.addEventListener('change', () => { if (accion.value != "") actualizarTabla(accion.value);});
+
+	function actualizarTabla(opcion) {
+		resultado.innerHTML = '';
+
+		document.getElementById('inputExtension').classList.remove("is-invalid");
+		document.getElementById('inputNombre').classList.remove("is-invalid");
+
+		let contenidoFilas = obtenerFilas();
+		let numFilas = contenidoFilas.length;
+
+		for (let i = 0; i < numFilas; i++) {
+			let nuevaFila = resultado.insertRow();
+			let celda1 = nuevaFila.insertCell(0);
+			let celda2 = nuevaFila.insertCell(1);
+			let celda3 = nuevaFila.insertCell(2);
+			celda1.classList.add('text-center');
+			celda1.textContent = contenidoFilas[i][0];
+			celda2.textContent = contenidoFilas[i][1];
+
+			let botonCopiar = document.createElement('button');
+			botonCopiar.textContent = 'Copiar';
+			botonCopiar.classList.add('btn', 'btn-sm', 'btn-outline-primary');
+			botonCopiar.addEventListener('click', function () {
+				botonCopiar.classList.remove('btn-outline-primary');				
+				try {
+					copiarAlPortapapeles(celda2.textContent) 
+				} catch (err) {
+					botonCopiar.textContent= 'Error!';
+					botonCopiar.classList.add('btn-danger');
+					setTimeout(() => {
+						botonCopiar.textContent = 'Copiar';
+						botonCopiar.classList.remove('btn-danger');
+						botonCopiar.classList.add('btn-outline-primary');
+					}, 1500);
+				}
+						
+				botonCopiar.textContent= 'Hecho';
+				botonCopiar.classList.add('btn-success');
+				setTimeout(() => {
+					botonCopiar.textContent = 'Copiar';
+					botonCopiar.classList.remove('btn-success');
+					botonCopiar.classList.add('btn-outline-primary');
+				}, 1500);
+			});
+			celda3.appendChild(botonCopiar);
+		}
+	}
+
+	function obtenerFilas() {
+
+		let contenidoFilas = [];
+		let extension = document.getElementById('inputExtension').value;
+		let lim = document.getElementById('inputLim').value;
+		let categoria = document.getElementById('inputCategoria').value;
+		let nombre = document.getElementById('inputNombre').value;
+		let grupoSalto = document.getElementById('inputGrupoSalto').value;
+		let grupoCaptura = document.getElementById('inputGrupoCaptura').value;
+
+		document.getElementById('inputExtension').classList.remove("is-invalid");
+		document.getElementById('inputNombre').classList.remove("is-invalid");
+		document.getElementById('inputLim').classList.remove("is-invalid");
+		document.getElementById('inputCategoria').classList.remove("is-invalid");
+		document.getElementById('inputGrupoSalto').classList.remove("is-invalid");
+		document.getElementById('inputGrupoCaptura').classList.remove("is-invalid");
+
+		switch (tipoAccion.value) {
+			case "Extensión":
+				switch (accion.value) {
+					case "Alta (manual)":
+						if (verificarInputsValoresCorrectos(['inputExtension', 'inputNombre', 'inputCategoria', 'inputLim'])) {
+							if (lim < 5) {
+								contenidoFilas[0] = ['Si', 'extension -i -d ' + extension + ' --customer 6 -l ' + lim + ' --csp ' + categoria];
+							} else {
+								contenidoFilas[0] = ['Si', 'extension -i -d ' + extension + ' --customer 5 -l ' + lim + ' --csp ' + categoria];
+							}
+							contenidoFilas[1] = ['Si', 'ip_extension -i -d ' + extension + ' --protocol sip'];
+							contenidoFilas[2] = ['Si', 'racei:dir=' + extension + ', cont=1;'];
+							contenidoFilas[3] = ['Si', 'name -i -d ' + extension + ' --name1 "' + nombre + '" --presentation-priority 1 --number-type dir'];
+						}
+					break;
+					case "Alta (script)":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', './alta_extension.sh ' + extension];
+						
+					break;
+					case "Baja":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) {
+							contenidoFilas[0] = ['Si', 'ip_extension -e -d ' + extension];
+							contenidoFilas[1] = ['Si', 'extension -e -d ' + extension];
+						}
+					break;
+					case "Desregistrar terminal":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'extension_unregistration -d  ' + extension + '  --forced'];
+						
+					break;
+					case "Ver num de extensiones en cada LIM":
+						contenidoFilas[0] = ['No', 'extension_info -p -d all –summary'];
+					break;
+					case "Ver estado":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'resource_status --high-detail --extensions -d ' + extension];
+						
+					break;
+					case "Cambio de nombre":
+						if (verificarInputsValoresCorrectos(['inputExtension', 'inputNombre'])) contenidoFilas[0] = ['No', 'name -i -d ' + extension + ' --name1 "' + nombre + '" --presentation-priority 1 --number-type dir'];
+						
+					break;
+					case "Cambio de categoría":
+						if (verificarInputsValoresCorrectos(['inputExtension', 'inputCategoria'])) contenidoFilas[0] = ['No', 'extension -c -d ' + extension + ' --csp ' + categoria];
+						
+					break;
+					case "Ruta carpeta de informe":
+						contenidoFilas[0] = ['No','/local/home/mxone_admin/Informes'];
+					break;
+				}
+			break;
+			case "Micollab":
+				switch (accion.value) {
+					case "Alta (manual)":
+						if (verificarInputsValoresCorrectos(['inputExtension', 'inputCategoria'])) {
+								contenidoFilas[0] = ['No', 'auth_code -i -d ' + extension + ' --auth-code ' + extension + ' --cil ' + extension + ' --csp ' + categoria];
+								contenidoFilas[1] = ['No', 'extension -c -d ' + extension + '  --video 1 --max-terminals 2 '];
+								contenidoFilas[2] = ['No', 'ip_extension -c -d  ' + extension + '  --max-terminals 2'];
+								contenidoFilas[3] = ['No', 'parallel_ringing -i -d ' + extension];
+						}
+					break;
+					case "Alta (script)":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', './mitel.sh ' + extension];
+					break;
+					case "Comprobar candado":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'auth_code -p -d ' + extension];
+					break;
+				}
+			break;
+			case "Desvío":
+				switch (accion.value) {
+					case "Ver (call list)":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'call_list -p -d ' + extension];
+					break;
+					case "Eliminar (call list)":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'call_list -e -d ' + extension];
+					break;
+					case "Ver (diversion)":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'diversion -p -d ' + extension];
+					break;
+					case "Eliminar (diversion)":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'diversion -e -d ' + extension];
+					break;
+				}
+			break;
+			case "Grupo de captura":
+				switch (accion.value) {
+					case "Ver grupos":
+						contenidoFilas[0] = ['No', 'extension_pickup_group -p --ext-pickup-group all'];
+					break;
+					case "Crear grupo":
+						if (verificarInputsValoresCorrectos(['inputGrupoCaptura', 'inputLim'])) contenidoFilas[0] = ['No', 'extension_pickup_group -i --ext-pickup-group ' + grupoCaptura + ' --lim ' + lim];
+					break;
+					case "Añadir miembro":
+						if (verificarInputsValoresCorrectos(['inputExtension', 'inputGrupoCaptura'])) contenidoFilas[0] = ['No', 'extension_group_member -i --extg-dir ' + grupoCaptura + ' --dir ' + extension];
+					break;
+					case "Eliminar miembro":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'extension_group_member -e --extg-dir ' + grupoCaptura + ' --dir ' + extension];
+					break;
+				}
+			break;
+			case "Grupo de salto":
+				switch (accion.value) {
+					case "Ver grupos":
+						contenidoFilas[0] = ['No', 'extension_group_info -p'];
+					break;
+					case "Crear grupo":
+						if (verificarInputsValoresCorrectos(['inputGrupoSalto', 'InputLim'])) contenidoFilas[0] = ['No', 'extension_group -i –extg-dir ' + grupoSalto + '  --customer 0 --extg-csp 1 --extg-type 5 --extg-sub-type 4 --lim ' + lim + '  --extg-queue 0 --extg-sel 1'];
+					break;
+					case "Eliminar grupo":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'call_list -e -d ' + extension];
+					break;
+					case "Añadir miembro":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'diversion -p -d ' + extension];
+					break;
+					case "Eliminar miembro":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'diversion -e -d ' + extension];
+					break;
+				}
+			break;
+			case "Llamada en espera":
+				switch (accion.value) {
+					case "Activar":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'extension -c -d ' + extension + ' --free-on-second-line 3'];
+					break;
+					case "Desactivar":
+						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', 'extension -c -d ' + extension + ' --free-on-second-line 3'];
+					break;
+				}
+			break;
+		}
+		return contenidoFilas;
+	}
+
+	function verificarInputsValoresCorrectos(ids) {
+		let check = true;
+		for (let id of ids) {
+			let input = document.getElementById(id);
+			if (!input || input.value.trim() === "") {
+				input.classList.add("is-invalid");
+				check = false;
+			}
+		}
+		return check;
+	}
+
+	function copiarAlPortapapeles(texto) {
+		navigator.clipboard.writeText(texto)
+			.then(() => {
+				console.log('Texto copiado al portapapeles: ', texto);
+			})
+			.catch(err => {
+				console.error('Error al copiar al portapapeles: ', err);
+				throw err;
+			});
+	}
+</script>
