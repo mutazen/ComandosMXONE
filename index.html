@@ -243,8 +243,9 @@
 						}
 					break;
 					case "Alta (script)":
-						if (verificarInputsValoresCorrectos(['inputExtension'])) contenidoFilas[0] = ['No', './alta_extension.sh ' + extension];
-						
+						if (verificarInputsValoresCorrectos(['inputExtension', 'inputNombre', 'inputCategoria', 'inputLim'])) {
+							contenidoFilas[0] = ['No', './alta_extension.sh ' + extension + ' ' + lim + ' ' + categoria + ' ' + '"' + nombre + '"'];
+						}
 					break;
 					case "Baja":
 						if (verificarInputsValoresCorrectos(['inputExtension'])) {
